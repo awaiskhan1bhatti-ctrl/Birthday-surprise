@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunflower Birthday Surprise</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FFF9EC;
+    --ink:#4A3820;
+    --petal:#F4B93D;
+    --petal-dark:#E39F1E;
+    --center:#6B4423;
+    --leaf:#8A9B5E;
+    --leaf-dark:#5F7048;
+    --line: rgba(74,56,32,0.15);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html,body{
+    height:100%;
+    background: radial-gradient(circle at 20% 10%, #FFFBF0 0%, var(--cream) 60%);
+    color:var(--ink);
+    font-family:'Jost',sans-serif;
+    overflow-x:hidden;
+  }
+
+  .stage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:34px 18px;
+    position:relative;
+  }
+
+  .panel{
+    max-width:540px;
+    width:100%;
+    text-align:center;
+    position:relative;
+    z-index:2;
+  }
+
+  .step{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .step.active{ display:flex; }
+
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(18px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .lock-row{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin-bottom:28px;
+  }
+  .lock-flower{
+    width:30px; height:30px;
+    position:relative;
+    opacity:0.35;
+    transform:scale(0.85);
+    transition: all 0.5s ease;
+  }
+  .lock-flower.open{
+    opacity:1;
+    transform:scale(1.05);
+  }
+
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color:var(--petal-dark);
+    margin-bottom:14px;
+    font-weight:500;
+  }
+
+  h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size: clamp(28px,6.5vw,44px);
+    line-height:1.18;
+    margin-bottom:16px;
+  }
+  h1 em{ font-style:italic; color:var(--petal-dark); }
+
+  p.q{
+    font-size:16px;
+    line-height:1.75;
+    max-width:420px;
+    margin-bottom:26px;
+    opacity:0.9;
+  }
+
+  .btn-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  button{
+    font-family:'Jost',sans-serif;
+    font-size:14px;
+    letter-spacing:0.04em;
+    padding:12px 28px;
+    border-radius:999px;
+    cursor:pointer;
+    border:1.5px solid var(--petal-dark);
+    background:transparent;
+    color:var(--petal-dark);
+    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  }
+  button.solid{ background:var(--petal); color:#4A3820; border-color:var(--petal); }
+  button:hover{ transform: translateY(-2px); }
+  button.solid:hover{ background:var(--petal-dark); }
+  button.outline:hover{ background:rgba(244,185,61,0.12); }
+
+  input[type="date"], input[type="text"]{
+    font-family:'Jost',sans-serif;
+    font-size:16px;
+    padding:12px 18px;
+    border-radius:14px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    margin-bottom:18px;
+    outline:none;
+  }
+  input[type="date"]:focus, input[type="text"]:focus{ border-color:var(--petal-dark); }
+
+  .hint{
+    margin-top:14px;
+    font-size:13px;
+    color:var(--leaf-dark);
+    font-style:italic;
+    min-height:18px;
+  }
+  .hint.error{ color:#B5563A; }
+
+  .progress-text{
+    font-size:12px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--leaf-dark);
+    margin-bottom:20px;
+  }
+
+  .photo-frame{
+    width:220px;
+    height:220px;
+    border-radius:16px;
+    border:3px solid var(--petal);
+    overflow:hidden;
+    margin-bottom:20px;
+    background:#fff8e0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .photo-frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .photo-placeholder-text{
+    font-size:12px;
+    color:var(--leaf-dark);
+    padding:12px;
+    line-height:1.5;
+  }
+
+  .cake-wrap{ width:120px; margin-bottom:16px; }
+  .flame{
+    animation: flicker 1.6s ease-in-out infinite alternate;
+    transform-origin:bottom center;
+  }
+  @keyframes flicker{
+    0%{transform:scaleY(1) rotate(-1deg);}
+    50%{transform:scaleY(1.08) rotate(1deg);}
+    100%{transform:scaleY(0.96) rotate(-2deg);}
+  }
+
+  .signoff{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:19px;
+    color:var(--petal-dark);
+    margin-top:18px;
+  }
+
+  .petal-field{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    overflow:hidden;
+  }
+  .petal{
+    position:absolute;
+    top:-30px;
+    font-size: 18px;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    opacity:0.85;
+  }
+  @keyframes fall{
+    from{ transform: translateY(-10vh) rotate(0deg); }
+    to{ transform: translateY(110vh) rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petal{ display:none; }
+    .flame{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petal-field" id="petalField"></div>
+
+<div class="stage">
+  <div class="panel">
+
+    <div class="lock-row" id="lockRow"></div>
+
+    <div class="step active" data-step="0">
+      <div class="eyebrow">Ek Khaas Safar</div>
+      <h1>Sabse pehle, <em>apni tareekh</em> bataiye</h1>
+      <p class="q">Ye surprise sirf aap ke liye hai. Neeche apni sahi tareekh-e-paidaish (birthdate) daaliye taake aage ka darwaza khul sake.</p>
+      <input type="date" id="birthdateInput">
+      <div class="btn-row">
+        <button class="solid" onclick="checkBirthdate()">Kholiye</button>
+      </div>
+      <div class="hint" id="hintBirth"></div>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="progress-text">Sawal 1 / 4</div>
+      <h1>Kya aap ko <em>sunflowers</em> pasand hain?</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="goTo(2)">Bohot zyada!</button>
+        <button class="outline" onclick="goTo(2)">Haan, thora sa</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="eyebrow">Ek Pyari Yaad</div>
+      <div class="photo-frame">
+    <img src="https://i.postimg.cc/VL0gSxsJ/download-(2).jpg" alt="Pehli Tasveer">
+ </div>
+      <h1 style="font-size:24px;">Ye lamha yaad hai?</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="goTo(3)">Aage badhein</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="progress-text">Sawal 2 / 4</div>
+      <h1>Kya aaj ka din <em>khaas</em> hai?</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="answerSpecial(true)">Haan</button>
+        <button class="outline" onclick="answerSpecial(false)">Nahi</button>
+      </div>
+      <div class="hint" id="hintSpecial"></div>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="eyebrow">Ek Aur Yaad</div>
+     <div class="photo-frame">
+    <img src="https://i.postimg.cc/d1Xr5sRn/saraswati-basu.jpg" alt="Doosri Tasveer">
+</div>
+      <h1 style="font-size:24px;">Kitna maza aaya tha!</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="goTo(5)">Aage badhein</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="5">
+      <div class="progress-text">Sawal 3 / 4</div>
+      <h1>Tayar hain apna <em>gift</em> khulwane ke liye?</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="goTo(6)">Bilkul tayar!</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="6">
+      <div class="progress-text">Sawal 4 / 4</div>
+      <h1>Ek dua sunne ke liye <em>tayar</em> hain?</h1>
+      <div class="btn-row">
+        <button class="solid" onclick="reveal()">Haan, dikhao!</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="7">
+      <div class="cake-wrap">
+        <svg viewBox="0 0 140 140" width="120" height="120">
+          <g class="flame">
+            <ellipse cx="70" cy="28" rx="6" ry="10" fill="#E8A33D"/>
+            <ellipse cx="70" cy="30" rx="3" ry="6" fill="#F4C86B"/>
+          </g>
+          <rect x="66" y="36" width="8" height="20" fill="#F4B93D"/>
+          <rect x="35" y="56" width="70" height="24" rx="4" fill="#FFF3D0" stroke="#E39F1E" stroke-width="1.5"/>
+          <rect x="22" y="80" width="96" height="30" rx="5" fill="#FCE7B2" stroke="#E39F1E" stroke-width="1.5"/>
+          <ellipse cx="70" cy="112" rx="55" ry="7" fill="none" stroke="#8A9B5E" stroke-width="1.5" opacity="0.6"/>
+          <circle cx="50" cy="68" r="2.5" fill="#8A9B5E"/>
+          <circle cx="70" cy="68" r="2.5" fill="#E39F1E"/>
+          <circle cx="90" cy="68" r="2.5" fill="#8A9B5E"/>
+        </svg>
+      </div>
+      <h1>Happy <em>Birthday</em>,<br>[Meri jan]!</h1>
+      <p class="q">Aap ke liye khushiyon bhari zindagi ki dua hai — bilkul
+      sunflower ki tarah, jo hamesha roshni ki taraf dekhta hai. Har naya
+      saal aap ke liye naye khwaab, naye rangeen lamhe aur dher saari
+      muskurahatein le kar aaye.</p>
+      <div class="signoff">— dhero muhabbat ke saath</div>
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="outline" onclick="restart()">Dobara khelein</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const CORRECT_BIRTHDATE = "2003-10-20"; // <-- ise apni marzi ki tareekh se badal dein
+
+  const totalLocks = 4;
+  const lockRow = document.getElementById('lockRow');
+  let unlocked = 0;
+
+  const sunflowerSVG = `
+    <svg viewBox="0 0 40 40" width="30" height="30">
+      <g fill="#F4B93D">
+        <ellipse cx="20" cy="6"  rx="4" ry="7"/>
+        <ellipse cx="20" cy="34" rx="4" ry="7"/>
+        <ellipse cx="6"  cy="20" rx="7" ry="4"/>
+        <ellipse cx="34" cy="20" rx="7" ry="4"/>
+        <ellipse cx="10" cy="10" rx="4" ry="7" transform="rotate(45 10 10)"/>
+        <ellipse cx="30" cy="30" rx="4" ry="7" transform="rotate(45 30 30)"/>
+        <ellipse cx="10" cy="30" rx="4" ry="7" transform="rotate(-45 10 30)"/>
+        <ellipse cx="30" cy="10" rx="4" ry="7" transform="rotate(-45 30 10)"/>
+      </g>
+      <circle cx="20" cy="20" r="8" fill="#6B4423"/>
+    </svg>
+  `;
+
+  for(let i=0;i<totalLocks;i++){
+    const l = document.createElement('div');
+    l.className = 'lock-flower';
+    l.id = 'lock'+i;
+    l.innerHTML = sunflowerSVG;
+    lockRow.appendChild(l);
+  }
+
+  function unlockNext(){
+    if(unlocked < totalLocks){
+      document.getElementById('lock'+unlocked).classList.add('open');
+      unlocked++;
+    }
+  }
+
+  function goTo(step){
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+  }
+
+  function checkBirthdate(){
+    const val = document.getElementById('birthdateInput').value;
+    const hint = document.getElementById('hintBirth');
+    if(!val){
+      hint.textContent = 'Pehle tareekh chunein.';
+      hint.classList.add('error');
+      return;
+    }
+    if(val === CORRECT_BIRTHDATE){
+      hint.classList.remove('error');
+      hint.textContent = '';
+      unlockNext();
+      goTo(1);
+    } else {
+      hint.classList.add('error');
+      hint.textContent = 'Ye tareekh sahi nahi lagti, dobara koshish karein.';
+    }
+  }
+
+  function answerSpecial(isYes){
+    const hint = document.getElementById('hintSpecial');
+    if(isYes){
+      hint.textContent = '';
+      unlockNext();
+      goTo(4);
+    } else {
+      hint.textContent = 'Sochiye zara... aaj to bohot khaas hai! 🌻';
+    }
+  }
+
+  const originalGoTo = goTo;
+  goTo = function(step){
+    originalGoTo(step);
+    if(step === 6) unlockNext();
+  };
+
+  function reveal(){
+    unlockNext();
+
+    const bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.15;
+    bgMusic.play().catch(function(){});
+
+    goTo(7);
+}
+
+  const petalField = document.getElementById('petalField');
+  const petalSymbols = ['🌻','✿','❁'];
+  for(let i=0;i<14;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalSymbols[Math.floor(Math.random()*petalSymbols.length)];
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.fontSize = (14 + Math.random()*14) + 'px';
+    p.style.animationDuration = (8 + Math.random()*10) + 's';
+    p.style.animationDelay = (Math.random()*10) + 's';
+    p.style.opacity = 0.5 + Math.random()*0.4;
+    petalField.appendChild(p);
+  }
+</script>
+<audio id="bgMusic" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+</body>
+</html>
